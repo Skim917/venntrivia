@@ -772,10 +772,11 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
             </div>
           )}
 
-          <div className="text-lg text-center mt-6 border-t border-gray-800 pt-4 text-gray-200">
+<div className="text-lg text-center mt-6 border-t border-gray-800 pt-4 text-gray-200">
             Score: {score.toLocaleString()} points
           </div>
         </div>
       </main>
     </>
   );
+}   <-- Add this single character here
