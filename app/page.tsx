@@ -3,24 +3,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import VennDiagram from './components/VennDiagram';
 
-type Props = {
-  gameData?: {
-    date: string;
-    questions: {
-      text: string;
-      correctAnswer: string;
-      alternateAnswers: string;
-      multipleChoice?: string[];
-      correctMultipleChoiceIndex?: number;
-      explanation: string;
-      circle1Text?: string;
-      circle2Text?: string;
-      circle3Text?: string;
-    }[];
-  };
+type GameData = {
+  date: string;
+  questions: {
+    text: string;
+    correctAnswer: string;
+    alternateAnswers: string;
+    multipleChoice?: string[];
+    correctMultipleChoiceIndex?: number;
+    explanation: string;
+    circle1Text?: string;
+    circle2Text?: string;
+    circle3Text?: string;
+  }[];
 };
 
-export default function Home({ gameData: providedGameData }: Props) {
+type HomeProps = {
+  gameData?: GameData;
+};
+
+const Home = ({ gameData: providedGameData }: HomeProps) => {
 
 const TitleLogo = () => {
   const [leftOpacity, setLeftOpacity] = useState(0);
@@ -836,3 +838,4 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
     </>
   );
 }
+export default Home;
