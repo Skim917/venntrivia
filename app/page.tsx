@@ -159,11 +159,16 @@ const resetProgress = (): void => {
   localStorage.removeItem('titleScreenLastShown');
   window.location.reload();
 };
-interface HomeProps {
-  gameData?: GameData;
+interface PageProps {
+  params: {};
+  searchParams: {};
 }
 
-export default function Home({ gameData: providedGameData }: HomeProps) {
+export default function Home({
+  params,
+  searchParams,
+}: PageProps & { gameData?: GameData }) {
+  const providedGameData = undefined; // We'll handle this differently in Next.js
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
