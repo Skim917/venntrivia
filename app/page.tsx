@@ -159,7 +159,26 @@ const resetProgress = () => {
   localStorage.removeItem('titleScreenLastShown'); // Add this line
   window.location.reload();
 };
-export default function Home({ gameData: providedGameData }) {
+interface GameData {
+  date: string;
+  questions: {
+    text: string;
+    correctAnswer: string;
+    alternateAnswers: string;
+    multipleChoice?: string[];
+    correctMultipleChoiceIndex?: number;
+    explanation: string;
+    circle1Text?: string;
+    circle2Text?: string;
+    circle3Text?: string;
+  }[];
+}
+
+export default function Home({
+  gameData: providedGameData,
+}: {
+  gameData?: GameData;
+}) {
   const [gameData, setGameData] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
