@@ -1,28 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import VennDiagram from './components/VennDiagram';
-
-type GameData = {
-  date: string;
-  questions: {
-    text: string;
-    correctAnswer: string;
-    alternateAnswers: string;
-    multipleChoice?: string[];
-    correctMultipleChoiceIndex?: number;
-    explanation: string;
-    circle1Text?: string;
-    circle2Text?: string;
-    circle3Text?: string;
-  }[];
-};
-
-type HomeProps = {
-  gameData?: GameData;
-};
-
-const Home = ({ gameData: providedGameData }: HomeProps) => {
+import VennDiagram from '@/components/VennDiagram';
+import { GameData, GameProgress, Answer } from '@/types';
 
 const TitleLogo = () => {
   const [leftOpacity, setLeftOpacity] = useState(0);
@@ -108,13 +88,12 @@ const TitleLogo = () => {
     </svg>
   );
 };
-
-const levenshteinDistance = (a, b) => {
+const levenshteinDistance = (a: string, b: string): number => {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
 
   const matrix = Array(a.length + 1)
-    .fill()
+    .fill(null)
     .map(() => Array(b.length + 1).fill(0));
 
   for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
@@ -135,14 +114,14 @@ const levenshteinDistance = (a, b) => {
 };
 
 const saveProgress = (
-  gameDate,
-  currentIndex,
-  currentScore,
-  answers,
+  gameDate: string,
+  currentIndex: number,
+  currentScore: number,
+  answers: Answer[],
   isComplete = false,
   isAnswered = false
-) => {
-  const progress = {
+): void => {
+  const progress: GameProgress = {
     gameDate,
     currentQuestionIndex: currentIndex,
     score: currentScore,
@@ -154,12 +133,12 @@ const saveProgress = (
   localStorage.setItem('gameProgress', JSON.stringify(progress));
 };
 
-const loadProgress = () => {
+const loadProgress = (): GameProgress | null => {
   const saved = localStorage.getItem('gameProgress');
   if (!saved) return null;
 
   try {
-    const progress = JSON.parse(saved);
+    const progress = JSON.parse(saved) as GameProgress;
     const savedDate = new Date(progress.lastUpdated);
     const now = new Date();
 
@@ -175,43 +154,41 @@ const loadProgress = () => {
   }
 };
 
-const resetProgress = () => {
+const resetProgress = (): void => {
   localStorage.removeItem('gameProgress');
-  localStorage.removeItem('titleScreenLastShown'); // Add this line
+  localStorage.removeItem('titleScreenLastShown');
   window.location.reload();
 };
-interface GameData {
-  date: string;
-  questions: {
-    text: string;
-    correctAnswer: string;
-    alternateAnswers: string;
-    multipleChoice?: string[];
-    correctMultipleChoiceIndex?: number;
-    explanation: string;
-    circle1Text?: string;
-    circle2Text?: string;
-    circle3Text?: string;
-  }[];
+interface HomeProps {
+  gameData?: GameData;
 }
 
-export default function Home({
-  gameData: providedGameData,
-}: {
-  gameData?: GameData;
-}) {
-  const [gameData, setGameData] = useState(null);
+export default function Home({ gameData: providedGameData }: HomeProps) {
+  const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const [feedback, setFeedback] = useState('');
+  const [feedback, setFeedback] = useState<React.ReactNode>('');
   const [showingMultipleChoice, setShowingMultipleChoice] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
-  const [answers, setAnswers] = useState([]);
-  const [gameDate, setGameDate] = useState(null);
+  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [gameDate, setGameDate] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [showTitleScreen, setShowTitleScreen] = useState(true);
+
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  const helpText = `**Welcome to Venn Trivia.**\n
+Each day features new **trivia** questions and ends with a special Venn diagram puzzle.\n
+Lorem ipsum dolor sit amet, \n
+consectetur adipiscing elit. \n
+[link:https://twitter.com/yourtwitterhandle|Follow us on Twitter]
+
+Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultrices, est nibh rutrum massa, a vulputate dui libero a dolor. Maecenas eget purus sagittis, accumsan tellus vitae, ultricies sapien. Proin maximus lorem mauris, a feugiat augue rhoncus sed. Fusce sapien odio, varius id dignissim et, suscipit eget enim. Aliquam erat volutpat. Praesent nec erat rutrum eros rhoncus ultrices. Ut ut odio lectus. Maecenas dui nisi, maximus vel elit eget, varius vehicula neque. Integer feugiat sem tortor, non ornare ligula auctor sit amet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam gravida consequat ipsum, quis blandit velit ultrices maximus. Ut hendrerit risus sem, et tincidunt risus fringilla quis. In gravida purus tortor, quis pretium sapien pretium quis.
+[link:https://twitter.com/yourtwitterhandle|Follow us on Twitter]\n
+[link:https://github.com/yourgithub|View on GitHub]`;
+
   // Title screen handling
   useEffect(() => {
     const lastShown = localStorage.getItem('titleScreenLastShown');
@@ -225,21 +202,8 @@ export default function Home({
     localStorage.setItem('titleScreenLastShown', new Date().toDateString());
     setShowTitleScreen(false);
   };
-
-  const nextButtonRef = useRef(null);
-
-  const helpText = `**Welcome to Venn Trivia.**\n
-Each day features new **trivia** questions and ends with a special Venn diagram puzzle.\n
-Lorem ipsum dolor sit amet, \n
-consectetur adipiscing elit. \n
-[link:https://twitter.com/yourtwitterhandle|Follow us on Twitter]
-
-Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultrices, est nibh rutrum massa, a vulputate dui libero a dolor. Maecenas eget purus sagittis, accumsan tellus vitae, ultricies sapien. Proin maximus lorem mauris, a feugiat augue rhoncus sed. Fusce sapien odio, varius id dignissim et, suscipit eget enim. Aliquam erat volutpat. Praesent nec erat rutrum eros rhoncus ultrices. Ut ut odio lectus. Maecenas dui nisi, maximus vel elit eget, varius vehicula neque. Integer feugiat sem tortor, non ornare ligula auctor sit amet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam gravida consequat ipsum, quis blandit velit ultrices maximus. Ut hendrerit risus sem, et tincidunt risus fringilla quis. In gravida purus tortor, quis pretium sapien pretium quis.
-[link:https://twitter.com/yourtwitterhandle|Follow us on Twitter]\n
-[link:https://github.com/yourgithub|View on GitHub]`;
-
   useEffect(() => {
-    const handleKeyPress = (event) => {
+    const handleKeyPress = (event: KeyboardEvent) => {
       if (event.shiftKey && event.key === '?') {
         resetProgress();
       }
@@ -249,9 +213,9 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
   }, []);
 
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
       if (!isAnswered && !showingMultipleChoice) {
-        const input = document.querySelector('input[type="text"]');
+        const input = document.querySelector('input[type="text"]') as HTMLInputElement;
         if (e.key.length === 1 && document.activeElement !== input) {
           input?.focus();
           if (!/Mobi|Android/i.test(navigator.userAgent)) {
@@ -265,7 +229,6 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isAnswered, showingMultipleChoice]);
 
-  // New effect to focus the Next button when answer is shown
   useEffect(() => {
     if (isAnswered && feedback && nextButtonRef.current) {
       nextButtonRef.current.focus();
@@ -302,11 +265,7 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
         setGameData(currentGameData);
         setGameDate(mostRecentDate);
 
-        if (
-          progress &&
-          progress.gameDate === mostRecentDate &&
-          !progress.isComplete
-        ) {
+        if (progress && progress.gameDate === mostRecentDate && !progress.isComplete) {
           setCurrentQuestionIndex(progress.currentQuestionIndex);
           setScore(progress.score);
           setAnswers(progress.answers);
@@ -314,8 +273,7 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
 
           if (progress.isAnswered && progress.answers.length > 0) {
             const lastAnswer = progress.answers[progress.answers.length - 1];
-            const currentQuestion =
-              currentGameData.questions[progress.currentQuestionIndex];
+            const currentQuestion = currentGameData.questions[progress.currentQuestionIndex];
 
             setFeedback(
               <div className="text-center">
@@ -335,7 +293,6 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
 
     loadGameAndProgress();
   }, [providedGameData]);
-
   if (!gameData) {
     return (
       <div className="min-h-screen bg-black text-white p-4">
@@ -347,19 +304,16 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
   const currentQuestion = gameData.questions[currentQuestionIndex];
   const isVennQuestion = currentQuestionIndex === 3;
 
-  const handleAnswerChecking = (userAnswer, isMultipleChoice = false) => {
+  const handleAnswerChecking = (userAnswer: string, isMultipleChoice = false) => {
     let isCorrect = false;
     let points = 0;
 
     if (isMultipleChoice) {
-      isCorrect =
-        parseInt(userAnswer) === currentQuestion.correctMultipleChoiceIndex;
+      isCorrect = parseInt(userAnswer) === currentQuestion.correctMultipleChoiceIndex;
       points = isCorrect ? 500 : 0;
     } else {
       const userAnswerNorm = userAnswer.toLowerCase().trim();
-      const correctAnswerNorm = currentQuestion.correctAnswer
-        .toLowerCase()
-        .trim();
+      const correctAnswerNorm = currentQuestion.correctAnswer.toLowerCase().trim();
       const altAnswers = (currentQuestion.alternateAnswers || '')
         .split('\n')
         .map((ans) => ans.toLowerCase().trim())
@@ -416,7 +370,7 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
     setAnswers(newAnswers);
     setIsAnswered(true);
     saveProgress(
-      gameDate,
+      gameDate!,
       currentQuestionIndex,
       newScore,
       newAnswers,
@@ -431,17 +385,17 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
     const nextIndex = currentQuestionIndex + 1;
     if (nextIndex >= gameData.questions.length) {
       setGameComplete(true);
-      saveProgress(gameDate, currentQuestionIndex, score, answers, true, false);
+      saveProgress(gameDate!, currentQuestionIndex, score, answers, true, false);
     } else {
       setCurrentQuestionIndex(nextIndex);
       setAnswer('');
       setIsAnswered(false);
       setShowingMultipleChoice(false);
       setFeedback('');
-      saveProgress(gameDate, nextIndex, score, answers, false, false);
+      saveProgress(gameDate!, nextIndex, score, answers, false, false);
     }
   };
-  // Helper component for the help button that's used in multiple places
+
   const HelpButton = () => (
     <div className="absolute top-4 right-4">
       <button
@@ -452,9 +406,8 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
       </button>
     </div>
   );
-
   if (gameComplete) {
-    const formatDate = (date) => {
+    const formatDate = (date: string | null) => {
       if (providedGameData && providedGameData.date) {
         const [year, month, day] = providedGameData.date
           .split('T')[0]
@@ -613,7 +566,6 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
       </>
     );
   }
-
   return (
     <>
       <style jsx global>{`
@@ -795,24 +747,14 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
                         .replace(/\[link:.*?\]/, '')}
                     </div>
                   )}
-                  {currentQuestion.explanation.match(
-                    /\[link:(.*?)\|(.*?)\]/
-                  ) && (
+                  {currentQuestion.explanation.match(/\[link:(.*?)\|(.*?)\]/) && (
                     <a
-                      href={
-                        currentQuestion.explanation.match(
-                          /\[link:(.*?)\|(.*?)\]/
-                        )[1]
-                      }
+                      href={currentQuestion.explanation.match(/\[link:(.*?)\|(.*?)\]/)?.[1]}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block text-sm text-gray-300 hover:text-gray-100 underline mt-2"
                     >
-                      {
-                        currentQuestion.explanation.match(
-                          /\[link:(.*?)\|(.*?)\]/
-                        )[2]
-                      }
+                      {currentQuestion.explanation.match(/\[link:(.*?)\|(.*?)\]/)?.[2]}
                     </a>
                   )}
                 </div>
@@ -837,5 +779,3 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
       </main>
     </>
   );
-}
-export default Home;
