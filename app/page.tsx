@@ -3,6 +3,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import VennDiagram from './components/VennDiagram';
 
+interface GameData {
+  date: string;
+  questions: {
+    text: string;
+    correctAnswer: string;
+    alternateAnswers: string;
+    multipleChoice?: string[];
+    correctMultipleChoiceIndex?: number;
+    explanation: string;
+    circle1Text?: string;
+    circle2Text?: string;
+    circle3Text?: string;
+  }[];
+}
+
 const TitleLogo = () => {
   const [leftOpacity, setLeftOpacity] = useState(0);
   const [rightOpacity, setRightOpacity] = useState(0);
