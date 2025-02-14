@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import VennDiagram from '@/components/VennDiagram';
+import VennDiagram from '../components/VennDiagram';
 import { GameData, GameProgress, Answer } from '@/types';
 
 const TitleLogo = () => {
