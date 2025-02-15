@@ -86,8 +86,8 @@ function Admin() {
       savedGames[gameDate] = currentGame;
       localStorage.setItem('triviaGames', JSON.stringify(savedGames));
       alert('Game saved successfully for ' + gameDate);
-    } catch (error) {
-      alert('Error saving game: ' + error.message);
+    } catch (error: any) {
+      alert('Error saving game: ' + (error.message || 'Unknown error'));
     }
   };
 
@@ -119,8 +119,8 @@ function Admin() {
         localStorage.setItem('triviaGames', JSON.stringify(savedGames));
         alert('Game deleted successfully');
         loadGame(''); // Reset form
-      } catch (error) {
-        alert('Error deleting game: ' + error.message);
+      } catch (error: any) {
+        alert('Error deleting game: ' + (error.message || 'Unknown error'));
       }
     }
   };
