@@ -133,7 +133,7 @@ function Admin() {
         >
           Back to Editor
         </button>
-        <Game initialGameData={currentGame} />
+        <Game />
       </div>
     );
   }
