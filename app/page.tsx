@@ -160,13 +160,10 @@ const resetProgress = (): void => {
   window.location.reload();
 };
 export type GameProps = {
-  gameData?: GameData;
-};
-export type GameProps = {
-  gameData?: GameData;
+  initialGameData?: GameData;
 };
 
-export default function Home({ gameData }: GameProps) {
+export default function Home({ initialGameData }: GameProps) {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -248,8 +245,8 @@ useEffect(() => {
       setGameDate(progress.gameDate);
     }
 
-    if (gameData) {
-      setGameData(gameData);
+    if (initialGameData) {
+      setGameData(initialGameData);
       return;
     }
 
