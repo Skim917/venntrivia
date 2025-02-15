@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Game from '../page';
+import Game, { GameProps } from '../page';
 
 interface Question {
   text: string;
