@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const VennDiagram = ({ circle1Text, circle2Text, circle3Text, centerText }) => {
+interface VennDiagramProps {
+  circle1Text?: string;
+  circle2Text?: string;
+  circle3Text?: string;
+  centerText?: string;
+}
+
+const VennDiagram = ({ circle1Text, circle2Text, circle3Text, centerText }: VennDiagramProps) => {
   const [circle1Opacity, setCircle1Opacity] = useState(0);
   const [circle2Opacity, setCircle2Opacity] = useState(0);
   const [circle3Opacity, setCircle3Opacity] = useState(0);
