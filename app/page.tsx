@@ -245,8 +245,8 @@ useEffect(() => {
       setGameDate(progress.gameDate);
     }
 
-    if (initialGameData) {
-      setGameData(initialGameData);
+    if (gameData) {
+      setGameData(gameData);
       return;
     }
 
