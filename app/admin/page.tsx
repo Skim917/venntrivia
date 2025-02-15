@@ -3,12 +3,29 @@
 import React, { useState } from 'react';
 import Game from '../page';
 
+interface Question {
+  text: string;
+  correctAnswer: string;
+  alternateAnswers: string;
+  multipleChoice?: string[];
+  correctMultipleChoiceIndex?: number;
+  explanation: string;
+  circle1Text?: string;
+  circle2Text?: string;
+  circle3Text?: string;
+}
+
+interface GameState {
+  date: string;
+  questions: Question[];
+}
+
 function Admin() {
   const [gameDate, setGameDate] = useState(
     new Date().toISOString().split('T')[0]
   );
   const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [currentGame, setCurrentGame] = useState({
+  const [currentGame, setCurrentGame] = useState<GameState>({
     date: gameDate,
     questions: [
       {
@@ -47,7 +64,7 @@ function Admin() {
     ],
   });
 
-  const handleQuestionChange = (index, field, value) => {
+  const handleQuestionChange = (index: number, field: string, value: any) => {
     setCurrentGame((prev) => {
       const newQuestions = [...prev.questions];
       newQuestions[index] = {
@@ -74,7 +91,7 @@ function Admin() {
     }
   };
 
-  const loadGame = (date) => {
+  const loadGame = (date: string) => {
     const savedGames = JSON.parse(localStorage.getItem('triviaGames') || '{}');
     if (savedGames[date]) {
       setCurrentGame(savedGames[date]);
@@ -107,7 +124,6 @@ function Admin() {
       }
     }
   };
-
   if (isPreviewMode) {
     return (
       <div className="min-h-screen bg-black p-4">
@@ -388,7 +404,7 @@ function Admin() {
                       <label className="block text-sm mb-1">
                         Multiple Choice Options (500 points)
                       </label>
-                      {question.multipleChoice.map((choice, choiceIndex) => (
+                      {question.multipleChoice?.map((choice, choiceIndex) => (
                         <div
                           key={choiceIndex}
                           className="flex items-center space-x-2 mt-2"
@@ -412,7 +428,7 @@ function Admin() {
                           <input
                             value={choice}
                             onChange={(e) => {
-                              const newChoices = [...question.multipleChoice];
+                              const newChoices = [...question.multipleChoice!];
                               newChoices[choiceIndex] = e.target.value;
                               handleQuestionChange(
                                 index,
