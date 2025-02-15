@@ -162,8 +162,11 @@ const resetProgress = (): void => {
 export type GameProps = {
   gameData?: GameData;
 };
-export default function Home({ gameData: providedGameData }: GameProps) {
-  const providedGameData = undefined;
+export type GameProps = {
+  gameData?: GameData;
+};
+
+export default function Home({ gameData }: GameProps) {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -245,8 +248,8 @@ useEffect(() => {
       setGameDate(progress.gameDate);
     }
 
-    if (providedGameData) {
-      setGameData(providedGameData);
+    if (gameData) {
+      setGameData(gameData);
       return;
     }
 
@@ -291,7 +294,7 @@ useEffect(() => {
   };
 
   loadGameAndProgress();
-}, [providedGameData]);
+}, [gameData]);
 if (!gameData) {
   return (
     <div className="min-h-screen bg-black text-white p-4">
@@ -407,8 +410,8 @@ const HelpButton = () => (
 );
 if (gameComplete) {
   const formatDate = (date: string | null) => {
-    if (providedGameData && providedGameData.date) {
-      const [year, month, day] = providedGameData.date
+    if (gameData && gameData.date) {
+      const [year, month, day] = gameData.date
         .split('T')[0]
         .split('-');
       return `${month}/${day}/${year.slice(2)}`;
@@ -429,7 +432,7 @@ if (gameComplete) {
 
   const handleShare = () => {
     const websiteUrl = 'VennTrivia.com';
-    const dateToUse = providedGameData ? providedGameData.date : gameDate;
+    const dateToUse = gameData ? gameData.date : gameDate;
 
     const shareText = `Venn Trivia:\n${formatDate(
       dateToUse
@@ -581,14 +584,14 @@ return (
               <TitleLogo />
               <div className="text-center space-y-4">
                 <div className="text-xl font-bold text-gray-200">
-                  {providedGameData
-                    ? providedGameData.date
+                  {gameData
+                    ? gameData.date
                         .split('T')[0]
                         .split('-')
                         .slice(1)
                         .join('/') +
                       '/' +
-                      providedGameData.date
+                      gameData.date
                         .split('T')[0]
                         .split('-')[0]
                         .slice(2)
