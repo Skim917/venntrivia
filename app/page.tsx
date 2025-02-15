@@ -159,11 +159,8 @@ const resetProgress = (): void => {
   localStorage.removeItem('titleScreenLastShown');
   window.location.reload();
 };
-export type GameProps = {
-  initialGameData?: GameData;
-};
-
-export default function Home({ initialGameData }: GameProps) {
+export default async function Page() {
+  const initialGameData = undefined;
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
