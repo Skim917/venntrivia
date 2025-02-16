@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Game from '../page';
 
+const isBrowser = typeof window !== 'undefined';
+
 interface Question {
   text: string;
   correctAnswer: string;
@@ -63,7 +65,6 @@ function Admin() {
       },
     ],
   });
-
   const handleQuestionChange = (index: number, field: string, value: any) => {
     setCurrentGame((prev) => {
       const newQuestions = [...prev.questions];
@@ -79,6 +80,7 @@ function Admin() {
   };
 
   const handleSave = () => {
+    if (!isBrowser) return;
     try {
       const savedGames = JSON.parse(
         localStorage.getItem('triviaGames') || '{}'
@@ -92,6 +94,7 @@ function Admin() {
   };
 
   const loadGame = (date: string) => {
+    if (!isBrowser) return;
     const savedGames = JSON.parse(localStorage.getItem('triviaGames') || '{}');
     if (savedGames[date]) {
       setCurrentGame(savedGames[date]);
@@ -110,6 +113,7 @@ function Admin() {
   };
 
   const handleDelete = () => {
+    if (!isBrowser) return;
     if (window.confirm('Are you sure you want to delete this game?')) {
       try {
         const savedGames = JSON.parse(
@@ -133,7 +137,7 @@ function Admin() {
         >
           Back to Editor
         </button>
-        <Game />
+        <Game gameData={currentGame} />
       </div>
     );
   }
@@ -152,6 +156,7 @@ function Admin() {
           <h1 className="text-2xl">Daily Trivia Admin</h1>
           <button
             onClick={() => {
+              if (!isBrowser) return;
               localStorage.removeItem('gameProgress');
               localStorage.removeItem('titleScreenLastShown');
               setIsPreviewMode(!isPreviewMode);
@@ -161,7 +166,6 @@ function Admin() {
             Preview Game
           </button>
         </div>
-
         <div className="space-y-6">
           <div className="space-y-4">
             <div>
@@ -217,7 +221,7 @@ function Admin() {
                 className="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded"
               >
                 <option value="">Create New Game</option>
-                {Object.keys(
+                {isBrowser && Object.keys(
                   JSON.parse(localStorage.getItem('triviaGames') || '{}')
                 )
                   .sort()
@@ -252,7 +256,6 @@ function Admin() {
               </button>
             </div>
           </div>
-
           {currentGame.questions.map((question, index) => (
             <div
               key={index}
@@ -361,7 +364,8 @@ function Admin() {
                     />
                   </div>
                 </>
-              ) : (
+              ) : null}
+{index !== 3 && (
                 <>
                   <div className="space-y-4">
                     <div>
@@ -445,8 +449,7 @@ function Admin() {
                   </div>
                 </>
               )}
-
-              <div>
+<div>
                 <label className="block text-sm mb-1">
                   Explanation (shown after answering). For sources, use:
                   [link:https://www.cnn.com|CNN.com]
@@ -475,4 +478,4 @@ function Admin() {
   );
 }
 
-export default Admin;
+export default Admin;        

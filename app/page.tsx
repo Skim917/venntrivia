@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import VennDiagram from './components/VennDiagram';
 import { GameData, GameProgress, Answer } from './types';
 
+const isBrowser = typeof window !== 'undefined';
+
 const TitleLogo = () => {
   const [leftOpacity, setLeftOpacity] = useState(0);
   const [rightOpacity, setRightOpacity] = useState(0);
@@ -121,6 +123,7 @@ const saveProgress = (
   isComplete = false,
   isAnswered = false
 ): void => {
+  if (!isBrowser) return;
   const progress: GameProgress = {
     gameDate,
     currentQuestionIndex: currentIndex,
@@ -134,6 +137,7 @@ const saveProgress = (
 };
 
 const loadProgress = (): GameProgress | null => {
+  if (!isBrowser) return null;
   const saved = localStorage.getItem('gameProgress');
   if (!saved) return null;
 
@@ -155,16 +159,12 @@ const loadProgress = (): GameProgress | null => {
 };
 
 const resetProgress = (): void => {
+  if (!isBrowser) return;
   localStorage.removeItem('gameProgress');
   localStorage.removeItem('titleScreenLastShown');
   window.location.reload();
 };
-export interface GameProps {
-  initialGameData: GameData;
-}
-
-export default async function Page() {
-  const initialGameData = undefined;
+export default function Page() {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -190,6 +190,7 @@ Pellentesque sit amet convallis ipsum. Donec faucibus, tellus eu tincidunt ultri
 [link:https://twitter.com/yourtwitterhandle|Follow us on Twitter]\n
 [link:https://github.com/yourgithub|View on GitHub]`;
 useEffect(() => {
+  if (!isBrowser) return;
   const lastShown = localStorage.getItem('titleScreenLastShown');
   const today = new Date().toDateString();
   if (lastShown === today) {
@@ -198,6 +199,7 @@ useEffect(() => {
 }, []);
 
 const handleStartGame = () => {
+  if (!isBrowser) return;
   localStorage.setItem('titleScreenLastShown', new Date().toDateString());
   setShowTitleScreen(false);
 };
@@ -246,12 +248,7 @@ useEffect(() => {
       setGameDate(progress.gameDate);
     }
 
-    if (gameData) {
-      setGameData(gameData);
-      return;
-    }
-
-    const allGames = JSON.parse(localStorage.getItem('triviaGames') || '{}');
+    const allGames = isBrowser ? JSON.parse(localStorage.getItem('triviaGames') || '{}') : {};
     const today = new Date().toISOString().split('T')[0];
     const dates = Object.keys(allGames).sort();
 
@@ -292,7 +289,7 @@ useEffect(() => {
   };
 
   loadGameAndProgress();
-}, [gameData]);
+}, []);
 if (!gameData) {
   return (
     <div className="min-h-screen bg-black text-white p-4">
@@ -429,6 +426,7 @@ if (gameComplete) {
   };
 
   const handleShare = () => {
+    if (!isBrowser) return;
     const websiteUrl = 'VennTrivia.com';
     const dateToUse = gameData ? gameData.date : gameDate;
 
