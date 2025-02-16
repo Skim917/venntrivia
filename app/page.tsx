@@ -6,6 +6,9 @@ import { GameData, GameProgress, Answer } from './types';
 
 const isBrowser = typeof window !== 'undefined';
 
+export interface GameProps {
+  gameData: GameData;
+}
 const TitleLogo = () => {
   const [leftOpacity, setLeftOpacity] = useState(0);
   const [rightOpacity, setRightOpacity] = useState(0);
@@ -164,7 +167,7 @@ const resetProgress = (): void => {
   localStorage.removeItem('titleScreenLastShown');
   window.location.reload();
 };
-export default function Page() {
+export default function Page({ gameData }: GameProps) {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState('');

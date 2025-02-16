@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Game from '../page';
+import Page, { GameProps } from '../page';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -137,7 +137,7 @@ function Admin() {
         >
           Back to Editor
         </button>
-        <Game gameData={currentGame} />
+        <Page gameData={currentGame} />
       </div>
     );
   }
